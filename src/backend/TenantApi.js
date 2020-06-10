@@ -1,8 +1,8 @@
 import Api from '@/backend/Api'
 
 export default {
-    fetchTenant () {
-        return Api().get('tenant')
+    fetchTenant (params) {
+        return Api().get('tenant/' + params.currenPage + '/' + params.show )
     },
 
     addTenant (params) {

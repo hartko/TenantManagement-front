@@ -19,10 +19,11 @@
                 <!-- start of Tenant Table -->
 
                 <div class="p-3" v-if="loading == false">
-                    <b-table-simple    responsive>
+                    <b-table-simple    responsive :per-page="perPage"
+      :current-page="currentPage">
 
 
-                        <b-thead class="text-center">
+                        <b-thead class="text-center" >
 
                             <b-tr>
                                 <b-th>ID</b-th>
@@ -34,7 +35,7 @@
                             </b-tr>
                         </b-thead>
                         <b-tbody class="text-center">
-                            <b-tr v-for="tenant in tenants">
+                            <b-tr v-for="(tenant,index) in tenants" :key="index">
                                 <b-th>{{tenant.tenant_id}}</b-th>
                                 <b-th>{{tenant.company_name}}</b-th>
                                 <b-td>{{tenant.link}}</b-td>
@@ -66,10 +67,16 @@
                             </b-tr>
                         </b-tfoot>
                     </b-table-simple>
+                    <b-pagination
+                    v-model="currentPage"
+                    :total-rows="totalPage"
+                    :per-page="perPage"
+                    aria-controls="my-table"
+                    ></b-pagination>
                 </div>
 
                 <div v-else>
-                Loading please wait ...
+                    Loading please wait ...
                 </div>
                 <!-- end of teant table -->
 
@@ -91,6 +98,9 @@ export default {
             tenants:'',
             tenant:'',
             loading: false,
+            perPage: 1,
+            currentPage: 1,
+            totalPage:0,
 
         }
 
@@ -122,12 +132,21 @@ export default {
             let params = {
 
                 database: "mongodb://localhost:27017/Tenant",
-                model: "tenants"
+                model: "tenants",
+                currenPage: this.currentPage,
+                show: this.perPage,
             }
             //add new tenat/ save tenant details
             var tenants =  await TenantApi.fetchTenant(params)
             if(tenants.data.status == 'success'){
-                this.tenants = tenants.data.message;
+                this.tenants = tenants.data.message.tenants;
+                var pagination = JSON.parse(tenants.data.message.pagination);
+
+                this.currentPage = pagination.currentPage;
+                this.totalPage = pagination.totalPage;
+                this.nextPage = pagination.nextPage;
+                this.previousPage = pagination.previousPage;
+
                 this.loading = false;
             }
 

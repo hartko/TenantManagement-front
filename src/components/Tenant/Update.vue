@@ -26,8 +26,15 @@
                 <b-row class="p-3">
 
                     <b-col cols="12" class="pb-4">
-                        <b-alert show variant="success" dismissible v-show="request_status == true">
+                        <b-alert show variant="success"  v-if="request_status == true">
                             {{request_msg}}
+                        </b-alert>
+                        <b-alert show variant="danger"  v-show ="request_status == false ">
+                            <ul id="example-1">
+                                <li v-for="error in request_msg" :key="error.msg">
+                                    {{ error.msg }}
+                                </li>
+                            </ul>
                         </b-alert>
 
                     </b-col>
@@ -51,11 +58,11 @@
                         <b-form-input v-model="tenant.last_name" type="text"placeholder="Enter Lastname"></b-form-input>
                     </b-col>
 
-                    <b-col cols="6" class="pb-4">
+                    <b-col cols="4" class="pb-4">
                         <label for="">Email</label>
                         <b-form-input v-model="tenant.email" type="text"placeholder="Enter Email"></b-form-input>
                     </b-col>
-                    <b-col cols="6" class="pb-4">
+                    <b-col cols="4" class="pb-4">
                         <label for="">Company Link</label>
                         <b-form-input v-model="tenant.link" type="text"placeholder="Enter Link"></b-form-input>
                     </b-col>
@@ -70,15 +77,7 @@
 
                         </b-form-select>
                     </b-col>
-                    <b-col cols="4" class="pb-4">
-                        <label for="">Password</label>
-                        <b-form-input v-model="tenant.password" type="password"placeholder="Enter Password"></b-form-input>
-                    </b-col>
 
-                    <b-col cols="4" class="pb-4">
-                        <label for="">Confirm Password</label>
-                        <b-form-input v-model="confirm_password" type="password"placeholder="Confirm Password"></b-form-input>
-                    </b-col>
 
 
                 </b-row>
@@ -102,8 +101,10 @@ export default {
     data() {
         return {
             tenant:'',
-            request_status:'',
+            request_status:null,
             request_msg:'',
+            loading: false,
+
 
         }
     },
@@ -128,18 +129,23 @@ export default {
         },
 
         async updateTenant(){
-
+            this.request_status = null
+            this.request_msg = ''
+            this.loading = true;
             var tenant = await TenantApi.updateTenant(this.tenant);
 
             if(tenant.data.status == 'success'){
 
                 this.request_status = true;
                 this.request_msg = tenant.data.message
+                this.loading = false;
 
             }else{
 
                 this.request_status = false;
                 this.request_msg = tenant.data.message
+                this.loading = false;
+
             }
 
 

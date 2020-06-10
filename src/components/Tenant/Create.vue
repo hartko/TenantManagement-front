@@ -73,7 +73,7 @@
 
                     <b-col cols="4" class="pb-4">
                         <label for="">Account Type</label>
-                        <b-form-select v-model="tenant.account_type" class="mb-3" >
+                        <b-form-select v-model="tenant.account_type" class="mb-3"  >
                             <b-form-select-option :value="null" disabled>Please select an option</b-form-select-option>
                             <b-form-select-option value="free">Free</b-form-select-option>
                             <b-form-select-option value="standard" >Standard</b-form-select-option>
@@ -118,6 +118,10 @@ export default {
             loading: false,
 
         }
+    },
+
+    created(){
+        this.tenant.account_type = null;
     },
     methods:{
 
